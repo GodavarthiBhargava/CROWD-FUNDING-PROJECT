@@ -1,0 +1,5 @@
+package com.cicd.sdp.cfp.dto;
+
+public class CampaignDTO {
+
+}

@@ -1,0 +1,30 @@
+package com.cicd.sdp.cfp.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.cicd.sdp.cfp.model.Admin;
+import com.cicd.sdp.cfp.model.Creator;
+import com.cicd.sdp.cfp.model.Contributor;
+import com.cicd.sdp.cfp.service.AdminService;
+
+@RestController
+@RequestMapping("/api/admin")
+@CrossOrigin("*")
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    // Admin Login
+    @PostMapping("/login")
+    public ResponseEntity<?> checkAdminLogin(@RequestBody Admin admin) {
+        try {
+            Admin a = adminService.checkAdminLogin(admin.getUsername(), admin.getPassword());
+            if (a != null) {
+                return ResponseEntity.ok(a);
+            } else {
+                return ResponseEntity.status(401).body("Invali
