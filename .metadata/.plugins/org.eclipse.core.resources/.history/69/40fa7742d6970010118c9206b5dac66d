@@ -1,0 +1,13 @@
+package com.cicd.sdp.cfp.service;
+
+import com.cicd.sdp.cfp.model.Campaign;
+
+import java.util.List;
+
+public interface CreatorService {
+    Campaign addCampaign(Long creatorId, Campaign campaign);
+    Campaign updateCampaign(Long creatorId, Long campaignId, Campaign update);
+    List<Campaign> viewAllCampaigns(Long creatorId);
+    Campaign viewCampaign(Long creatorId, Long campaignId);
+    void deleteCampaign(Long creatorId, Long campaignId);
+}

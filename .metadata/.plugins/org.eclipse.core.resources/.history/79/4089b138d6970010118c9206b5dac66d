@@ -1,0 +1,13 @@
+package com.cicd.sdp.cfp.service;
+
+import com.cicd.sdp.cfp.model.Campaign;
+import com.cicd.sdp.cfp.model.Donation;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+public interface ContributorService {
+    List<Campaign> listAvailableCampaigns();
+    Donation donate(Long contributorId, Long campaignId, BigDecimal amount);
+    List<Donation> listMyDonations(Long contributorId);
+}

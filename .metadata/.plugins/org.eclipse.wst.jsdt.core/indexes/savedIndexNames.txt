@@ -1,0 +1,7 @@
+INDEX VERSION 1.4+E:\Crowd-Funding-Platform\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+4282809997.index
+2100421447.index
+1928284033.index
+3873724843.index
+577066094.index
+3045263665.index

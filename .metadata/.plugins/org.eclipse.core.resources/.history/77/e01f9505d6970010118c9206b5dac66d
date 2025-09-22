@@ -1,0 +1,10 @@
+package com.cicd.sdp.cfp.model;
+
+public enum CampaignStatus {
+    PENDING,
+    APPROVED,
+    REJECTED
+}
+
+
+

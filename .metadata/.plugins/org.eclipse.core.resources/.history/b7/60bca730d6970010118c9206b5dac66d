@@ -1,0 +1,14 @@
+package com.cicd.sdp.cfp.service;
+
+import com.cicd.sdp.cfp.model.Campaign;
+import com.cicd.sdp.cfp.model.Creator;
+
+import java.util.List;
+
+public interface AdminService {
+    List<Campaign> getPendingCampaigns();
+    Campaign approveCampaign(Long id);
+    void deleteCampaign(Long id);
+    List<Creator> getAllUsers();
+    Creator blockUser(Long id);
+}

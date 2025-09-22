@@ -1,0 +1,69 @@
+package com.cicd.sdp.cfp.service;
+
+import com.cicd.sdp.cfp.model.Campaign;
+import com.cicd.sdp.cfp.model.CampaignStatus;
+import com.cicd.sdp.cfp.model.Creator;
+import com.cicd.sdp.cfp.repository.CampaignRepository;
+import com.cicd.sdp.cfp.repository.CreatorRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class CreatorServiceImpl implements CreatorService {
+    private final CampaignRepository campaignRepository;
+    private final CreatorRepository creatorRepository;
+
+    @Override
+    public Campaign addCampaign(Long creatorId, Campaign campaign) {
+        Creator creator = creatorRepository.findById(creatorId)
+                .orElseThrow(() -> new IllegalArgumentException("Creator not found"));
+        campaign.setId(null);
+        campaign.setCreator(creator);
+        campaign.setStatus(CampaignStatus.PENDING);
+        return campaignRepository.save(campaign);
+    }
+
+    @Override
+    public Campaign updateCampaign(Long creatorId, Long campaignId, Campaign update) {
+        Campaign existing = getOwnedCampaign(creatorId, campaignId);
+        if (update.getTitle() != null) existing.setTitle(update.getTitle());
+        if (update.getDescription() != null) existing.setDescription(update.getDescription());
+        if (update.getGoalAmount() != null) existing.setGoalAmount(update.getGoalAmount());
+        return campaignRepository.save(existing);
+    }
+
+    @Override
+    public List<Campaign> viewAllCampaigns(Long creatorId) {
+        Creator creator = creatorRepository.findById(creatorId)
+                .orElseThrow(() -> new IllegalArgumentException("Creator not found"));
+        return campaignRepository.findByCreator(creator);
+    }
+
+    @Override
+    public Campaign viewCampaign(Long creatorId, Long campaignId) {
+        return getOwnedCampaign(creatorId, campaignId);
+    }
+
+    @Override
+    public void deleteCampaign(Long creatorId, Long campaignId) {
+        Campaign existing = getOwnedCampaign(creatorId, campaignId);
+        existing.setDeleted(true);
+        campaignRepository.save(existing);
+    }
+
+    private Campaign getOwnedCampaign(Long creatorId, Long campaignId) {
+        Creator creator = creatorRepository.findById(creatorId)
+                .orElseThrow(() -> new IllegalArgumentException("Creator not found"));
+        Campaign campaign = campaignRepository.findById(campaignId)
+                .orElseThrow(() -> new IllegalArgumentException("Campaign not found"));
+        if (!campaign.getCreator().getId().equals(creator.getId())) {
+            throw new IllegalArgumentException("Campaign not owned by creator");
+        }
+        return campaign;
+    }
+}

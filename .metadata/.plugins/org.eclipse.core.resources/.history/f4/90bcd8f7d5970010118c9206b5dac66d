@@ -1,0 +1,48 @@
+package com.cicd.sdp.cfp.controller;
+
+import com.cicd.sdp.cfp.model.Campaign;
+import com.cicd.sdp.cfp.model.Creator;
+import com.cicd.sdp.cfp.service.AdminService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/admin")
+public class AdminController {
+
+    private final AdminService adminService;
+
+    @Autowired
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
+    }
+
+    @GetMapping("/campaigns/pending")
+    public ResponseEntity<List<Campaign>> getPendingCampaigns() {
+        return ResponseEntity.ok(adminService.getPendingCampaigns());
+    }
+
+    @PutMapping("/campaigns/approve/{id}")
+    public ResponseEntity<Campaign> approveCampaign(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.approveCampaign(id));
+    }
+
+    @DeleteMapping("/campaigns/delete/{id}")
+    public ResponseEntity<Void> deleteCampaign(@PathVariable Long id) {
+        adminService.deleteCampaign(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<Creator>> getAllUsers() {
+        return ResponseEntity.ok(adminService.getAllUsers());
+    }
+
+    @PutMapping("/users/block/{id}")
+    public ResponseEntity<Creator> blockUser(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.blockUser(id));
+    }
+}

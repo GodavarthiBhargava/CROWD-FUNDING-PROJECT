@@ -1,0 +1,58 @@
+package com.cicd.sdp.cfp.service;
+
+import com.cicd.sdp.cfp.model.*;
+import com.cicd.sdp.cfp.repository.CampaignRepository;
+import com.cicd.sdp.cfp.repository.ContributorRepository;
+import com.cicd.sdp.cfp.repository.DonationRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class ContributorServiceImpl implements ContributorService {
+    private final CampaignRepository campaignRepository;
+    private final ContributorRepository contributorRepository;
+    private final DonationRepository donationRepository;
+
+    @Override
+    public List<Campaign> listAvailableCampaigns() {
+        return campaignRepository.findByDeletedFalseAndStatus(CampaignStatus.APPROVED);
+    }
+
+    @Override
+    public Donation donate(Long contributorId, Long campaignId, BigDecimal amount) {
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException("Amount must be positive");
+        }
+        Campaign campaign = campaignRepository.findById(campaignId)
+                .orElseThrow(() -> new IllegalArgumentException("Campaign not found"));
+        if (campaign.isDeleted() || campaign.getStatus() != CampaignStatus.APPROVED) {
+            throw new IllegalArgumentException("Campaign not available for donations");
+        }
+        Contributor contributor = contributorRepository.findById(contributorId)
+                .orElseThrow(() -> new IllegalArgumentException("Contributor not found"));
+        if (contributor.isBlocked()) {
+            throw new IllegalArgumentException("Contributor is blocked");
+        }
+        Donation donation = Donation.builder()
+                .campaign(campaign)
+                .contributor(contributor)
+                .amount(amount)
+                .build();
+        campaign.setRaisedAmount(campaign.getRaisedAmount().add(amount));
+        campaignRepository.save(campaign);
+        return donationRepository.save(donation);
+    }
+
+    @Override
+    public List<Donation> listMyDonations(Long contributorId) {
+        Contributor contributor = contributorRepository.findById(contributorId)
+                .orElseThrow(() -> new IllegalArgumentException("Contributor not found"));
+        return donationRepository.findByContributor(contributor);
+    }
+}

@@ -1,0 +1,42 @@
+package com.cicd.sdp.cfp.controller;
+
+import com.cicd.sdp.cfp.model.Campaign;
+import com.cicd.sdp.cfp.model.Donation;
+import com.cicd.sdp.cfp.service.ContributorService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/contributor")
+@RequiredArgsConstructor
+public class ContributorController {
+
+    private final ContributorService contributorService;
+
+    // For simplicity, contributorId is provided via query param. In real app, use auth principal.
+
+    @GetMapping("/campaigns")
+    public ResponseEntity<List<Campaign>> listCampaigns() {
+        return ResponseEntity.ok(contributorService.listAvailableCampaigns());
+    }
+
+    @PostMapping("/donate/{campaignId}")
+    public ResponseEntity<Donation> donate(@RequestParam Long contributorId, @PathVariable Long campaignId, @RequestBody DonateRequest body) {
+        return ResponseEntity.ok(contributorService.donate(contributorId, campaignId, body.getAmount()));
+    }
+
+    @GetMapping("/donations")
+    public ResponseEntity<List<Donation>> myDonations(@RequestParam Long contributorId) {
+        return ResponseEntity.ok(contributorService.listMyDonations(contributorId));
+    }
+
+    @Data
+    public static class DonateRequest {
+        private BigDecimal amount;
+    }
+}

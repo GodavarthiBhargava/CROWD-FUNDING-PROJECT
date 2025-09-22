@@ -1,0 +1,54 @@
+package com.cicd.sdp.cfp.service;
+
+import com.cicd.sdp.cfp.model.Campaign;
+import com.cicd.sdp.cfp.model.CampaignStatus;
+import com.cicd.sdp.cfp.model.Creator;
+import com.cicd.sdp.cfp.repository.CampaignRepository;
+import com.cicd.sdp.cfp.repository.CreatorRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class AdminServiceImpl implements AdminService {
+    private final CampaignRepository campaignRepository;
+    private final CreatorRepository creatorRepository;
+
+    @Override
+    public List<Campaign> getPendingCampaigns() {
+        return campaignRepository.findByDeletedFalseAndStatus(CampaignStatus.PENDING);
+    }
+
+    @Override
+    public Campaign approveCampaign(Long id) {
+        Campaign campaign = campaignRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Campaign not found"));
+        campaign.setStatus(CampaignStatus.APPROVED);
+        return campaignRepository.save(campaign);
+    }
+
+    @Override
+    public void deleteCampaign(Long id) {
+        Campaign campaign = campaignRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Campaign not found"));
+        campaign.setDeleted(true);
+        campaignRepository.save(campaign);
+    }
+
+    @Override
+    public List<Creator> getAllUsers() {
+        return creatorRepository.findAll();
+    }
+
+    @Override
+    public Creator blockUser(Long id) {
+        Creator creator = creatorRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Creator not found"));
+        creator.setBlocked(true);
+        return creatorRepository.save(creator);
+    }
+}

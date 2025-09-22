@@ -1,0 +1,15 @@
+package com.cicd.sdp.cfp.repository;
+
+import com.cicd.sdp.cfp.model.Campaign;
+import com.cicd.sdp.cfp.model.CampaignStatus;
+import com.cicd.sdp.cfp.model.Creator;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface CampaignRepository extends JpaRepository<Campaign, Long> {
+    List<Campaign> findByStatus(CampaignStatus status);
+    List<Campaign> findByCreator(Creator creator);
+    List<Campaign> findByDeletedFalseAndStatus(CampaignStatus status);
+    List<Campaign> findByDeletedFalse();
+}

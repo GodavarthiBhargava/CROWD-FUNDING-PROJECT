@@ -1,0 +1,45 @@
+package com.cicd.sdp.cfp.controller;
+
+import com.cicd.sdp.cfp.model.Campaign;
+import com.cicd.sdp.cfp.service.CreatorService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/creator")
+@RequiredArgsConstructor
+public class CreatorController {
+
+    private final CreatorService creatorService;
+
+    // For simplicity, creatorId is provided via query param. In real app, use auth principal.
+
+    @PostMapping("/campaign/add")
+    public ResponseEntity<Campaign> addCampaign(@RequestParam Long creatorId, @RequestBody Campaign campaign) {
+        return ResponseEntity.ok(creatorService.addCampaign(creatorId, campaign));
+    }
+
+    @PutMapping("/campaign/update/{id}")
+    public ResponseEntity<Campaign> updateCampaign(@RequestParam Long creatorId, @PathVariable("id") Long campaignId, @RequestBody Campaign update) {
+        return ResponseEntity.ok(creatorService.updateCampaign(creatorId, campaignId, update));
+    }
+
+    @GetMapping("/campaign/viewall")
+    public ResponseEntity<List<Campaign>> viewAll(@RequestParam Long creatorId) {
+        return ResponseEntity.ok(creatorService.viewAllCampaigns(creatorId));
+    }
+
+    @GetMapping("/campaign/view/{id}")
+    public ResponseEntity<Campaign> view(@RequestParam Long creatorId, @PathVariable("id") Long campaignId) {
+        return ResponseEntity.ok(creatorService.viewCampaign(creatorId, campaignId));
+    }
+
+    @DeleteMapping("/campaign/delete/{id}")
+    public ResponseEntity<Void> delete(@RequestParam Long creatorId, @PathVariable("id") Long campaignId) {
+        creatorService.deleteCampaign(creatorId, campaignId);
+        return ResponseEntity.noContent().build();
+    }
+}
